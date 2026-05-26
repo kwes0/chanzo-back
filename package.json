@@ -1,0 +1,22 @@
+{
+  "name": "chanzo-backend",
+  "version": "1.0.0",
+  "description": "chanzo backend",
+  "main": "index.js",
+  "author": "kw3so",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "seed:movies": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "6.19.0"
+  }
+}
