@@ -4,10 +4,39 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Article {
+  id        String   @id @default(uuid())
+  guid      String   @unique
+  title     String
+  link      String
+  pubDate   String
+  createdAt DateTime @default(now())
+
+  clusterId String
+
+  cluster Cluster @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+
+  @@index([guid])
+  @@index([pubDate(sort: Desc)])
+  @@index([clusterId])
+}
+
+model Cluster {
+  id        String    @id @default(uuid())
+  title     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  articles  Article[]
+
+  @@index([createdAt(sort: Desc)])
 }
