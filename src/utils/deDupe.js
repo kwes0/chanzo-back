@@ -27,3 +27,5 @@ const deDupeArticle = async (articleItem) => {
 
   return nonDupes; //This array of items is where we are going to apply the cluster engine
 };
+
+export {deDupeArticle}
