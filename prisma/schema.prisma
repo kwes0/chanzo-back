@@ -5,7 +5,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -19,8 +18,10 @@ model Article {
   guid      String   @unique
   title     String
   link      String
-  pubDate   String
+  pubDate   DateTime
   createdAt DateTime @default(now())
+  sourceName String
+  sourceUrl String
 
   clusterId String
 
@@ -31,11 +32,17 @@ model Article {
   @@index([clusterId])
 }
 
+model fetchedFeed{
+  id String @id @default(uuid())
+  feedCount Int
+  fetchedAt DateTime @default(now())
+}
+
 model Cluster {
   id        String    @id @default(uuid())
   title     String
   createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   articles  Article[]
 
   @@index([createdAt(sort: Desc)])
