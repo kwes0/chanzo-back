@@ -31,7 +31,7 @@ model Article {
   @@index([pubDate(sort: Desc)])
   @@index([clusterId])
 }
-
+// store non duplicated fetches
 model fetchedFeed{
   id String @id @default(uuid())
   feedCount Int

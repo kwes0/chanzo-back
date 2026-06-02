@@ -112,7 +112,7 @@ const assignCluster = async (articleTitle) => {
     },
   });
 
-  return newCluster; //Currently returning the whole cluster but ideally should just create the new id
+  return newCluster.id; //Currently returning the whole cluster but ideally should just create the new id
 };
 
 export { assignCluster };
