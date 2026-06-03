@@ -9,7 +9,7 @@ import feedsArrayRoutes  from "./routes/feedsArrayRoutes.js";
 //Call thirdparty to start before framework is initialized
 config();
 connectDB();
-parseFeed();
+// parseFeed(); Hapa ilikuwa testing one two
 
 const app = express();
 

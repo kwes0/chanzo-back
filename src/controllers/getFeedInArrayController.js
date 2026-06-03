@@ -16,21 +16,20 @@ const getFeedInArray = async (req, res) => {
       console.error("There is an processing the request", error.message);
     }
   }
-    if (allItems.length === 0) {
-      res.status(404).json({
-        status: "error",
-        message: "No items were found",
-      });
-    }
-
-    res.status(200).json({
-      status: "success",
-      data: {
-        count: allItems.length,
-        arrayOfFeeds: allItems,
-      },
+  if (allItems.length === 0) {
+    return res.status(404).json({
+      status: "error",
+      message: "No items were found",
     });
-  
+  }
+
+  return res.status(200).json({
+    status: "success",
+    data: {
+      count: allItems.length,
+      arrayOfFeeds: allItems,
+    },
+  });
 };
 
 export { getFeedInArray };

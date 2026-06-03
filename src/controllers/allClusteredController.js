@@ -1,0 +1,28 @@
+import { prisma } from "../config/db.js";
+
+const allClustered = async (req, res) => {
+  //I want to display the clusters and their responding articles
+  //Due to the relationship between the cluster and articles I can just do this
+  const clusters = await prisma.cluster.findMany({
+    include: {
+      articles: true,
+    },
+    orderBy: {
+      articles: {
+        _count: "desc",
+      },
+    },
+  });
+
+  const clusteredForDisplay = clusters.map((cluster) => ({
+    title: cluster.title,
+    articleCount: cluster.articles.length,
+    articles: cluster.articles,
+  }));
+
+  return res.status(200).json({
+    data: clusteredForDisplay,
+  });
+};
+
+export { allClustered };

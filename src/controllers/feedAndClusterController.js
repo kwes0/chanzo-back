@@ -3,12 +3,16 @@ import { assignCluster } from "../utils/clusterEngine.js";
 import { deDupeArticle } from "../utils/deDupe.js";
 import { parseFeed } from "../utils/getFeedArray.js";
 
-const feedandCluster = async (req, res) => {
-  const rawFeeds = process.env.RAW_FEEDS?.split(",")
+const getRawFeeds = () => {
+  return process.env.RAW_FEEDS?.split(",")
     .map((url) => url.trim())
     .filter(Boolean); //This removes empty strings if there's a trailing comma
+};
 
+const feedandCluster1 = async (req, res) => {
   // const rawFeeds = ["https://www.standardmedia.co.ke/rss/headlines.php"];
+  const rawFeeds = getRawFeeds();
+
   if (rawFeeds < 1 || !rawFeeds) {
     res.status(404).json({
       error: "No raw feeds found",
@@ -23,7 +27,7 @@ const feedandCluster = async (req, res) => {
       const arrayOfFeeds = await parseFeed(rawFeed);
       allItems.push(...arrayOfFeeds);
     }
-    if (allItems === 0) {
+    if (allItems.length === 0) {
       res.status(404).json({
         error: "Nothing was fetched from the feeds",
       });
@@ -34,19 +38,25 @@ const feedandCluster = async (req, res) => {
       const nonDuped = await deDupeArticle(item);
       nonDups.push(...nonDuped);
     }
+    // --------
+
     const createdArticles = [];
     for (const article of nonDups) {
       const clusterId = await assignCluster(article.title);
-
-      const createdArticle = await prisma.article.create({
-        data: {
-          ...article,
-          clusterId: clusterId,
-        },
-      });
-      createdArticles.push(createdArticle);
+      try {
+        const createdArticle = await prisma.article.create({
+          data: {
+            ...article,
+            clusterId: clusterId,
+          },
+        });
+        createdArticles.push(createdArticle);
+      } catch (e) {
+        console.warn(`skipped ${article} because it's duplicated`);
+        return;
+      }
     }
-
+    // -------
     await prisma.fetchedFeed.create({
       data: {
         feedCount: nonDups.length,
@@ -65,6 +75,77 @@ const feedandCluster = async (req, res) => {
     res.status(500).json({
       status: "failed",
       message: "Failed at feed, cluster and save",
+    });
+  }
+};
+
+const feedandCluster = async (req, res) => {
+  //Get the feed
+  try {
+    const rawFeeds = getRawFeeds();
+    if (!rawFeeds || rawFeeds === 0) {
+       return res.status(404).json({
+        status: "failed",
+        error: "no raw feeds zimepaka",
+      });
+    }
+    //Have the feed fetch run in parallel
+    const feedResults = await Promise.allSettled(
+      rawFeeds.map((rawFeed) => parseFeed(rawFeed)),
+    );
+
+    const allItems = feedResults
+      .filter((result) => result.status === "fulfilled")
+      .flatMap((result) => result.value); //transforms elements using a mapping function and then flattens the result into a new collection.
+
+    const failedFeedContent = feedResults.filter(
+      (result) => result.status === "rejected",
+    ).length;
+
+    if (allItems.length === 0) {
+      return res.status(404).json({
+        message: "Hanaku content kwa hizo Feedmstiri",
+        data: {
+          failedFeedContent,
+        },
+      });
+    }
+
+    // Cheki deduped content
+    const nonDups = await deDupeArticle(allItems);
+
+    //Ziingie moja moja juu an article itacreate a new cluster
+    const createdArticles = [];
+    for (const article of nonDups) {
+      const clusterId = await assignCluster(article.title);
+
+      const createArticle = await prisma.article.create({
+        data: {
+          ...article,
+          clusterId: clusterId,
+        },
+      });
+      createdArticles.push(createArticle);
+    }
+    await prisma.fetchedFeed.create({
+      data: {
+        feedCount: nonDups.length,
+      },
+    });
+
+    //Shughulika na return res
+    return res.status(200).json({
+      status: "success",
+      data: {
+        fetched: allItems.length,
+        mapya: nonDups.length,
+        inserted: createdArticles.length,
+      },
+    });
+  } catch (e) {
+    console.error("Feed and cluster error:", e);
+    return res.status(500).json({
+      message: "Hapo kwa feed, cluster hadi kwa DB",
     });
   }
 };
