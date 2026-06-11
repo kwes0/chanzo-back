@@ -37,19 +37,19 @@ import { prisma } from "../config/db.js";
 //Batch dedupe and making sure filter is by guid since it is unique in db.
 const deDupeArticle = async (articles) => {
   //takes an array of feed articles
-  const uniqueByGuid = new Map();
+  const uniqueByGuid = new Map(); //Non duplicates within the requested batch
 
   for (const article of articles) {
     if (!article.guid) continue;
 
-    uniqueByGuid.set(article.guid, article);
+    uniqueByGuid.set(article.guid, article);//key has to be unique.
   }
 
-  const uniqueArticles = [...uniqueByGuid.values()];
+  const uniqueArticles = [...uniqueByGuid.values()];//Create an array of unique articles 
 
   if (uniqueArticles.length === 0) {
     return [];
-  }
+  }//exit early if we don't need to check the db.
 
   const existingArticles = await prisma.article.findMany({
     where: {

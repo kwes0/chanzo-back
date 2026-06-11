@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get("/feedInArray", getFeedInArray);
 
-router.get("/feedAndCluster", feedandCluster);
+router.get("/feedAndCluster", feedandCluster); //requires auth
 
 router.get("/allClustered", allClustered);
 

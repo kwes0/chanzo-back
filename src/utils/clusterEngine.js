@@ -65,47 +65,41 @@ const getBigram = (str) => {
 
 //Calculate the SDC getting the title and conparing to the current string.
 const diceCoefficient = (strA, strT) => {
-  const bigramA = getBigram(strA);
-  const bigramT = getBigram(strT);
+  // const bigramA = getBigram(strA);
+  // const bigramT = getBigram(strT);
 
-  if (bigramA.size === 0 || bigramT.size === 0) return 0;
-  //We are using size because our bigram are sets and not arrays. Maps and sets do not have a length property.
-
-  //calculate SDC
-  let intersection = 0;
-  for (const bigram of bigramA) {
-    if (bigramT.has(bigram)) intersection++;
-    //Use .has() with Map and Set for fast existence checks. Avoid the in operator for objects when you only care about own properties—use hasOwnProperty() instead to avoid checking inherited properties.
-  }
-
-  return (2 * intersection) / (bigramA.size + bigramT.size);
-};
-
-//Calculate SDC but for the overlap - In this we'll get bigram seperately
-const diceCoefficientOverlap = (strA, strT) => {
   if (strA.size === 0 || strT.size === 0) return 0;
   //We are using size because our bigram are sets and not arrays. Maps and sets do not have a length property.
 
   //calculate SDC
   let intersection = 0;
-  for (const bigram of strA) {
-    if (strT.has(bigram)) intersection++;
+  for (const str of strA) {
+    if (strT.has(str)) intersection++;
     //Use .has() with Map and Set for fast existence checks. Avoid the in operator for objects when you only care about own properties—use hasOwnProperty() instead to avoid checking inherited properties.
   }
 
   return (2 * intersection) / (strA.size + strT.size);
 };
 
+//Calculate SDC but for the overlap - In this we'll get bigram seperately
+// const diceCoefficientOverlap = (strA, strT) => {
+//   if (strA.size === 0 || strT.size === 0) return 0;
+//   //We are using size because our bigram are sets and not arrays. Maps and sets do not have a length property.
+
+//   //calculate SDC
+//   let intersection = 0;
+//   for (const str of strA) {
+//     if (strT.has(str)) intersection++;
+//     //Use .has() with Map and Set for fast existence checks. Avoid the in operator for objects when you only care about own properties—use hasOwnProperty() instead to avoid checking inherited properties.
+//   }
+
+//   return (2 * intersection) / (strA.size + strT.size);
+// };
+
 //Calculate the final score for the overlap
 const similarityScore = (titleA, titleB) => {
-  const tokenScore = diceCoefficientOverlap(
-    getTokenSet(titleA),
-    getTokenSet(titleB),
-  );
-  const bigramScore = diceCoefficientOverlap(
-    getBigram(titleA),
-    getBigram(titleB),
-  );
+  const tokenScore = diceCoefficient(getTokenSet(titleA), getTokenSet(titleB));
+  const bigramScore = diceCoefficient(getBigram(titleA), getBigram(titleB));
 
   return tokenScore * 0.7 + bigramScore * 0.3;
 };
@@ -192,7 +186,7 @@ const getActiveClusters = () => {
 //Assigning cluster or create new cluster and output the new clust and assigner the id to the articles in the cluster.
 
 const assignCluster = async (articleTitle) => {
-  const DICE_THRESHOLD = Number(process.env.DICE_THRESHOLD ?? 0.15); //env always returns a string and for this comparison we need a number. Number is Cap first letter.
+  const DICE_THRESHOLD = Number(process.env.DICE_THRESHOLD ?? 0.2); //env always returns a string and for this comparison we need a number. Number is Cap first letter.
   const activeClusters = await getActiveClusters();
 
   let bestMatch = null; //We don't return nothing if there is no match
@@ -226,7 +220,7 @@ const __test__ = {
   tokenise,
   getTokenSet,
   getBigram,
-  diceCoefficientOverlap,
+  diceCoefficient,
   similarityScore,
   getActiveClusterWindow,
 };
