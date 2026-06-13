@@ -126,29 +126,30 @@ const similarityScore = (titleA, titleB) => {
 // };
 
 // Implement week worth of cluster upto the last day of the month no spillover
-const DAY_IN_MS = 24 * 60 * 60 * 100;
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const KENYA_UTC_OFFSET_IN_MINS = 3 * 60;
 
 const getKenyaDateParts = (date) => {
-  const offsetInMs = KENYA_UTC_OFFSET_IN_MINS * 60 * 100;
+  const offsetInMs = KENYA_UTC_OFFSET_IN_MINS * 60 * 1000;
   const kenyaDate = new Date(date.getTime() + offsetInMs);
 
   return {
-    year: kenyaDate.getUTCFullYear(),
-    month: kenyaDate.getUTCMonth(),
-    date: kenyaDate.getUTCDate(),
-    day: kenyaDate.getUTCDay(), //Sunday - 0 and Monday - 1 and Sato - 6
+    year: kenyaDate.getFullYear(),
+    month: kenyaDate.getMonth(),
+    date: kenyaDate.getDate(),
+    day: kenyaDate.getDay(), //Sunday - 0 and Monday - 1 and Sato - 6
     offsetInMs,
   };
 };
 
 const KenyaMidnighttoUTC = (year, month, date, offsetInMs) => {
-  return new Date(Date.UTC(year, month, date) - offsetInMs);
+  return new Date(Date.UTC(year, month, date) - offsetInMs); 
 };
+
 const getActiveClusterWindow = (now = new Date()) => {
   const { year, month, date, day, offsetInMs } = getKenyaDateParts(now);
   //Use Monday as start of the week
-  const daysSinceMonday = day === 0 ? 6 : day - 1;
+  const daysSinceMonday = day === 0 ? 6 : day - 1; //Output is a number with Monday as 0. if it is Sunday, then it has been 6 days since Monday. Else it is the day - 1 since Monday.
   const startOfToday = KenyaMidnighttoUTC(year, month, date, offsetInMs);
   const startOfWeek = new Date(
     startOfToday.getTime() - daysSinceMonday * DAY_IN_MS,
@@ -167,19 +168,19 @@ const getActiveClusterWindow = (now = new Date()) => {
 const getActiveClusters = () => {
   //Get today window
   const { start, end } = getActiveClusterWindow();
-  console.log(`${start} - ${end}`);
+  console.log(`cluster duration: ${start} - ${end}`);
   //Cluster DB query.
   return prisma.cluster
-    .findMany
-    // {
-    // where: {
-    //   createdAt: {
-    //     gte: start,
-    //     lt: end,
-    //   },
-    // },
-    // }
-    ();
+    .findMany(
+    {
+    where: {
+      createdAt: {
+        gte: start,
+        lt: end,
+      },
+    },
+    }
+    );
   //Review implementation with select:{ id: true, title: true,}
 };
 
@@ -194,7 +195,7 @@ const assignCluster = async (articleTitle) => {
 
   for (const cluster of activeClusters) {
     const comparison = similarityScore(articleTitle, cluster.title); //because cluster is an object, and we are comparing strings. cluster is now lowered as well for comparison
-
+    //Collect an array of the all the scores and pick th greatest of 
     if (comparison > comparisonScore) {
       bestMatch = cluster; //This is because we return this ids cluster to assign and map it to the fresh articles.
       comparisonScore = comparison;
