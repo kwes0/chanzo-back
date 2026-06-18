@@ -10,9 +10,9 @@ const router = express.Router();
 
 router.get("/feedInArray", getFeedInArray);
 
-router.get("/feedAndCluster", feedandCluster); //requires auth
+router.get("/feedAndCluster", feedandCluster); //requires admin auth
 
-router.get("/cronFeedAndCluster", cronAuth, feedandCluster);
+router.get("/cronFeedAndCluster", cronAuth, feedandCluster); //Authenticated
 
 router.get("/allClustered", allClustered);
 

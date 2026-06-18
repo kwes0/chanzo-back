@@ -16,6 +16,9 @@ const allClustered = async (req, res) => {
 
   const clusteredForDisplay = clusters.map((cluster) => ({
     title: cluster.title,
+    id: cluster.id,
+    createdAt: cluster.createdAt,
+    updatedAt: cluster.updatedAt,
     articleCount: cluster.articles.length,
     articles: cluster.articles,
   }));
