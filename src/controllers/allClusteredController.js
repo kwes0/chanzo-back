@@ -36,11 +36,8 @@ const allClustered = async (req, res) => {
   }
 };
 
-const getDailyArticles = async (req, res) => {
-  //params - clusters
-};
-const getWeeklyClusters = async (req, res) => {
+const getWeeksClusters = async (req, res) => {
   // params - singleArticles
 };
 
-export { allClustered, getDailyArticles, getWeeklyClusters };
+export { allClustered, getWeeksClusters };
