@@ -1,4 +1,5 @@
 import { prisma } from "../config/db.js";
+import { getActiveClusterWindow } from "../utils/activeClusterWindow.js";
 
 const allClustered = async (req, res) => {
   //I want to display the clusters and their responding articles
