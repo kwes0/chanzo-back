@@ -6,11 +6,10 @@ import { parseFeed } from "../utils/getFeedArray.js";
 const getRawFeeds = () => {
   return process.env.RAW_FEEDS?.split(",")
     .map((url) => url.trim())
-    .filter(Boolean); //This removes empty strings if there's a trailing comma
+    .filter(Boolean); 
 };
 
 const feedandCluster1 = async (req, res) => {
-  // const rawFeeds = ["https://www.standardmedia.co.ke/rss/headlines.php"];
   const rawFeeds = getRawFeeds();
 
   if (rawFeeds < 1 || !rawFeeds) {
@@ -89,14 +88,13 @@ const feedandCluster = async (req, res) => {
         error: "no raw feeds zimepaka",
       });
     }
-    //Have the feed fetch run in parallel
     const feedResults = await Promise.allSettled(
       rawFeeds.map((rawFeed) => parseFeed(rawFeed)),
     );
 
     const allItems = feedResults
       .filter((result) => result.status === "fulfilled")
-      .flatMap((result) => result.value); //transforms elements using a mapping function and then flattens the result into a new collection.
+      .flatMap((result) => result.value);
 
     const failedFeedContent = feedResults.filter(
       (result) => result.status === "rejected",
@@ -142,7 +140,6 @@ const feedandCluster = async (req, res) => {
       },
     });
   } catch (e) {
-    console.error("Feed and cluster error:", e);
     return res.status(500).json({
       message: "Hapo kwa feed, cluster hadi kwa DB",
     });

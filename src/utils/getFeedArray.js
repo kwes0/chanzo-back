@@ -42,32 +42,5 @@ const parseFeed = async (feedUrl) => {
   return schemaApproved;
 };
 
-// const getFeedArray = async (url) => {
-//   let rssText;
-
-//   try {
-//     const response = await fetch(url);
-//     if (!response.ok) {
-//       throw new Error(`HTTP error status: ${response.status}`);
-//     }
-//     rssText = await response.text();
-//     // return rssText;
-//     console.log(rssText);
-//   } catch (error) {
-//     console.error("ERROR fetching feed:", error);
-//   }
-
-// };
-
-// const rawFeeds = process.env.RAW_FEEDS;
-// const rssURLs = rawFeeds.split(",").map((item) => item.trim());
-
-// for (const rssURL of rssURLs) {
-//   try {
-//     parseFeed(rssURL);
-//   } catch (error) {
-//     console.error(`Error fetching from ${error} `);
-//   }
-// }
 
 export { parseFeed };

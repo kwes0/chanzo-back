@@ -5,10 +5,10 @@ const BASEURL = process.env.APP_URL || "http://localhost:3003";
 const ENDPOINT = "/ropie/cronFeedAndCluster";
 
 const feedAndClusterCron = async () => {
-  // console.log(`${new Date.toISOString()} ndio shughuli inaanza`);
+
 
   try {
-    //Axios get function grabs two args - url and config
+
     const response = await axios.get(`${BASEURL}${ENDPOINT}`, {
       headers: {
         "Content-Type": "application/json",
@@ -20,7 +20,7 @@ const feedAndClusterCron = async () => {
   } catch (error) {
     const status = error.response?.status;
     const message = error.response?.data || error.message;
-    console.error(`CRON job failed ${status}`, message);
+    console.log("error hapa kwa feed and Cluster cron")
   }
 };
 
@@ -28,7 +28,5 @@ cron.schedule("0 * * * *", feedAndClusterCron, {
   scheduled: true,
   timezone: "Africa/Nairobi",
 });
-
-// console.log("CRON runs every top of the hour");
 
 export { feedAndClusterCron };

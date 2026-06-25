@@ -20,8 +20,8 @@ const KenyaMidnighttoUTC = (year, month, date, offsetInMs) => {
 
 const getActiveClusterWindow = (now = new Date()) => {
   const { year, month, date, day, offsetInMs } = getKenyaDateParts(now);
-  //Use Monday as start of the week
-  const daysSinceMonday = day === 0 ? 6 : day - 1; //Output is a number with Monday as 0. if it is Sunday, then it has been 6 days since Monday. Else it is the day - 1 since Monday.
+
+  const daysSinceMonday = day === 0 ? 6 : day - 1;
   const startOfToday = KenyaMidnighttoUTC(year, month, date, offsetInMs);
   const startOfWeek = new Date(
     startOfToday.getTime() - daysSinceMonday * DAY_IN_MS,

@@ -8,18 +8,18 @@ import cors from "cors";
 import feedsArrayRoutes from "./routes/feedsArrayRoutes.js";
 import "./cron/fetchAndClusterCron.js";
 
-//Call thirdparty to start before framework is initialized
+
 config();
 connectDB();
-// parseFeed(); Hapa ilikuwa testing one two
+
 
 const app = express();
 
 const localhost = process.env.LOCALHOST_FRONT;
 const remotehost = process.env.REMOTEHOST_FRONT;
 
-//Body parsing middleware
-app.use(express.json()); //This ensures that JSON data is handled. Node and express don't handle JSON by default and require a parser.
+
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
@@ -30,8 +30,6 @@ app.use(
 
 // USE OF IMPORTED ROUTES
 app.use("/ropie", feedsArrayRoutes);
-
-// feedAndClusterCron();
 
 //Server and fail safes
 //Port config and listening to the server

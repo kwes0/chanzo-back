@@ -2,9 +2,6 @@ import { prisma } from "../config/db.js";
 import { getActiveClusterWindow } from "../utils/activeClusterWindow.js";
 
 const allClustered = async (req, res) => {
-  //This is best for search
-  //I want to display the clusters and their responding articles
-  //Due to the relationship between the cluster and articles I can just do this
   try {
     const clusters = await prisma.cluster.findMany({
       include: {
@@ -30,7 +27,6 @@ const allClustered = async (req, res) => {
       data: clusteredForDisplay,
     });
   } catch (e) {
-    console.error(e.message);
     return res.status(404).json({
       status: "error",
       message: "Error data haitaki kukuwa fed",
@@ -72,7 +68,6 @@ const getWeeksClusters = async (req, res) => {
       data: thisWeekCluster,
     });
   } catch (e) {
-    console.log(e.message);
     res.status(404).json({
       status: "failed",
       message: "Error fetching weeks cluster",

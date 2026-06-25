@@ -3,9 +3,7 @@ import { parseFeed } from "../utils/getFeedArray.js";
 const getFeedInArray = async (req, res) => {
   const rawFeeds = process.env.RAW_FEEDS?.split(",")
     .map((url) => url.trim())
-    .filter(Boolean); //This removes empty strings if there's a trailing comma
-
-  // const rawFeeds = ["https://www.kenyans.co.ke/feeds/news?_wrapper_format=html","https://nation.africa/kenya/rss.xml","https://www.standardmedia.co.ke/rss/headlines.php"]
+    .filter(Boolean); 
   const allItems = [];
 
   for (const rawFeed of rawFeeds) {
