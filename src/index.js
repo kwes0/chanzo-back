@@ -23,7 +23,7 @@ app.use(express.json()); //This ensures that JSON data is handled. Node and expr
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: localhost || remotehost,
+    origin: [localhost, remotehost],
     methods: ["GET"],
   }),
 );
