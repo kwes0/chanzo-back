@@ -15,12 +15,15 @@ connectDB();
 
 const app = express();
 
+const localhost = process.env.LOCALHOST_FRONT;
+const remotehost = process.env.REMOTEHOST_FRONT;
+
 //Body parsing middleware
 app.use(express.json()); //This ensures that JSON data is handled. Node and express don't handle JSON by default and require a parser.
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: localhost || remotehost,
     methods: ["GET"],
   }),
 );
