@@ -2,6 +2,7 @@ import { prisma } from "../config/db.js";
 import { getActiveClusterWindow } from "../utils/activeClusterWindow.js";
 
 const allClustered = async (req, res) => {
+  //This is best for search
   //I want to display the clusters and their responding articles
   //Due to the relationship between the cluster and articles I can just do this
   try {
@@ -37,8 +38,46 @@ const allClustered = async (req, res) => {
   }
 };
 
+const weeksCluster = () => {
+  //This is best for tiered search
+  const { start, end } = getActiveClusterWindow();
+  console.log(`cluster duration: ${start} - ${end}`);
+  //Cluster DB query.
+  return prisma.cluster.findMany({
+    where: {
+      createdAt: {
+        gte: start,
+        lt: end,
+      },
+    },
+    include: {
+      articles: true,
+    },
+  });
+};
+
 const getWeeksClusters = async (req, res) => {
-  // params - singleArticles
+  try {
+    const theClusters = await weeksCluster();
+    const thisWeekCluster = theClusters.map((aCluster) => ({
+      title: aCluster.title,
+      id: aCluster.id,
+      createdAt: aCluster.createdAt,
+      updatedAt: aCluster.updatedAt,
+      articleCount: aCluster.articles.length,
+      articles: aCluster.articles,
+    }));
+    return res.status(200).json({
+      status: "success",
+      data: thisWeekCluster,
+    });
+  } catch (e) {
+    console.log(e.message);
+    res.status(404).json({
+      status: "failed",
+      message: "Error fetching weeks cluster",
+    });
+  }
 };
 
 export { allClustered, getWeeksClusters };

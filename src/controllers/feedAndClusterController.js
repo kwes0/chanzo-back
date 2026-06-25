@@ -138,7 +138,6 @@ const feedandCluster = async (req, res) => {
       status: "success",
       data: {
         fetched: allItems.length,
-        mapya: nonDups.length,
         inserted: createdArticles.length,
       },
     });
